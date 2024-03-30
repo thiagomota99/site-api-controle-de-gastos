@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Categorias</title>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+        }
+	
+        /* Estilizando o campo de entrada */
+        input[type="text"] {
+            width: 200px; /* largura desejada */
+            padding: 8px; /* espaçamento interno */
+            border: 1px solid #ccc; /* borda com cor cinza */
+            border-radius: 5px; /* borda arredondada */
+            margin-bottom: 10px; /* margem inferior */
+            font-size: 16px; /* tamanho da fonte */
+            box-sizing: border-box; /* incluir o padding e a borda na largura total */
+        }
+
+        /* Estilizando o botão */
+        button {
+            background-color: #4CAF50; /* cor de fundo verde */
+            color: white; /* cor do texto branco */
+            padding: 10px 20px; /* espaçamento interno */
+            border: none; /* remover a borda */
+            border-radius: 5px; /* borda arredondada */
+            cursor: pointer; /* cursor de ponteiro ao passar o mouse */
+            font-size: 16px; /* tamanho da fonte */
+        }
+
+        /* Estilizando o botão ao passar o mouse */
+        button:hover {
+            background-color: #45a049; /* cor de fundo verde mais escura */
+        }
+		
+        .container {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+        h1 {
+            text-align: center;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #0056b3;
+        }
+        #response {
+            margin-top: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+		
+        /* Estilos da barra de navegação */
+        nav {
+            background-color: #333; /* Cor de fundo */
+            overflow: hidden;
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 20px; /* Espaçamento entre itens */
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            background-color: #ddd; /* Cor de fundo ao passar o mouse */
+            color: black;
+        }
+
+        @media screen and (max-width: 600px) {
+            nav a {
+                float: none;
+                display: block;
+                text-align: left;
+            }
+        } 		
+    </style>
+</head>
+<body>
+    <div class="container">
+		<nav>
+			<a href="index.html">Despesa</a>
+			<a href="categorias.html">Categoria</a>
+		</nav>
+		<hr>
+		
+		<input type="text" id="descricao" placeholder="Descrição" required>
+		<button id="btnCadastrarCategoria">Cadastrar</button>
+		<hr>
+		
+        <button onclick="fetchData()">Buscar Categorias</button>
+        <div id="response"></div>
+    </div>
+
+<script>
+const urlDestino = "http://192.168.1.11:8080/categorias"
+
+$(document).ready(function() {
+
+  $("#btnCadastrarCategoria").click(function() {
+	var objetoJSON = getCamposFormulario();
+	enviarObjetoJSON(objetoJSON, urlDestino, function (resposta) {
+		// Callback de sucesso
+		alert(resposta);
+		console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
+	}, function (erro) {
+		alert(erro);
+		// Callback de erro
+		console.error("Ocorreu um erro na requisição:", erro);
+	});
+  });
+});
+
+function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback) {
+    // Configuração da requisição AJAX
+    $.ajax({
+        type: "POST",
+        url: urlDestino,
+        contentType: "application/json",
+        data: JSON.stringify(objetoJSON),
+        success: function (resposta) {
+            // Chamada ao callback de sucesso
+            if (sucessoCallback && typeof sucessoCallback === "function") {
+                sucessoCallback(resposta);
+            }
+        },
+        error: function (xhr, status, error) {
+            // Chamada ao callback de erro
+            if (erroCallback && typeof erroCallback === "function") {
+                erroCallback(xhr.responseText);
+            }
+        }
+    });
+}
+
+function getCamposFormulario() {
+    var descricao = document.getElementById("descricao").value;
+	
+	var formDataJSON = {
+      "descricao": descricao
+    };
+	
+	return formDataJSON;
+}
+
+function fetchData() {
+    fetch('http://192.168.1.11:8080/categorias')
+        .then(response => response.json())
+        .then(data => {
+            // Processar os dados recebidos
+            displayData(data);
+        })
+        .catch(error => {
+            console.error('Erro ao buscar dados:', error);
+            document.getElementById('response').innerHTML = '<p>Erro ao buscar dados.</p>';
+        });
+}
+
+function displayData(data) {
+    // Exibir os dados recebidos na página
+            let responseDiv = document.getElementById('response');
+            responseDiv.innerHTML = '<h2>Categorias:</h2>';
+            if (data.length === 0) {
+                responseDiv.innerHTML += '<p>Nenhuma categoria encontrada.</p>';
+            } else {
+                let categoriesTable = '<table>' +
+                                        '<thead>' +
+                                            '<tr>' +
+                                                '<th>ID</th>' +
+                                                '<th>Descrição</th>' +
+                                            '</tr>' +
+                                        '</thead>' +
+                                        '<tbody>';
+                data.forEach(category => {
+                    categoriesTable += '<tr>' +
+                                            '<td>' + category.id + '</td>' +
+                                            '<td>' + category.descricao + '</td>' +
+                                        '</tr>';
+                });
+                categoriesTable += '</tbody>' +
+                                    '</table>';
+                responseDiv.innerHTML += categoriesTable;
+            }
+        }
+    </script>
+</body>
+</html>
