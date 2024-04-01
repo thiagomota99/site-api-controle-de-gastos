@@ -122,7 +122,7 @@
     </div>
 
 <script>
-const urlDestino = "ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias"
+const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias"
 
 $(document).ready(function() {
 
@@ -173,7 +173,7 @@ function getCamposFormulario() {
 }
 
 function fetchData() {
-    fetch('ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias')
+    fetch('http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias')
         .then(response => response.json())
         .then(data => {
             // Processar os dados recebidos
