@@ -211,7 +211,7 @@
 </div>
 
 <script>
-const urlDestino = "ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/despesas";
+const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/despesas";
 const categoriaSelect = document.getElementById("categoria");
 var selectAno = document.getElementById("selectAno");
 const formaPagamentoSelect = document.getElementById("forma_pagamento");
@@ -326,7 +326,7 @@ function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback)
   // Função para carregar categorias via AJAX
   function carregarCategorias() {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias", true);
+    xhr.open("GET", "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias", true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var categorias = JSON.parse(xhr.responseText);
@@ -344,7 +344,7 @@ function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback)
   // Função para carregar formas de pagamento via AJAX
   function carregarFormasPagamento() {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/formaDePagamento", true);
+    xhr.open("GET", "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/formaDePagamento", true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var formasPagamento = JSON.parse(xhr.responseText);
@@ -365,7 +365,7 @@ function carregarDespesas() {
 	var mesSelecionado = selectMes.value.toUpperCase();
 	var anoSelecionado = selectAno.value;
 	console.log("Teste");
-    xhr.open("GET", "ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/despesas/" + mesSelecionado + "/" + anoSelecionado, true);
+    xhr.open("GET", "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/despesas/" + mesSelecionado + "/" + anoSelecionado, true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var despesas = JSON.parse(xhr.responseText);
