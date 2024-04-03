@@ -169,28 +169,12 @@
   <hr>
 
   <h2>Despesas</h2>
-  <label for="selectMes">Selecione o Mês:</label>
-  <select id="selectMes" name="mes">
-    <option value="JANEIRO">Janeiro</option>
-    <option value="FEVEREIRO">Fevereiro</option>
-    <option value="MARCO">Março</option>
-    <option value="ABRIL">Abril</option>
-    <option value="MAIO">Maio</option>
-    <option value="JUNHO">Junho</option>
-    <option value="JULHO">Julho</option>
-    <option value="AGOSTO">Agosto</option>
-    <option value="SETEMBRO">Setembro</option>
-    <option value="OUTUBRO">Outubro</option>
-    <option value="NOVEMBRO">Novembro</option>
-    <option value="DEZEMBRO">Dezembro</option>
-  </select>
+  <label for="dataInicioDespesa">Selecione a Data Início</label>
+  <input type="datetime-local" id="dataInicioDespesa" name="dataInicioDespesa" required>
+
+  <label for="dataFimDespesa">Selecione a Data Início</label>
+  <input type="datetime-local" id="dataFimDespesa" name="dataFimDespesa" required>
   
-  <label for="selectAno">Ano:</label>
-  <select id="selectAno" name="ano">
-	<option value="2023">2023</option>
-	<option value="2024">2024</option>
-	<!-- Adicione mais opções conforme necessário -->
-  </select>
   
   <button id="btnConsultar">Consultar</button>
   <hr>
@@ -211,19 +195,19 @@
 </div>
 
 <script>
-const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/despesas";
+const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/";
+//const urlDestino = "http://192.168.1.11:8080/";
 const categoriaSelect = document.getElementById("categoria");
-var selectAno = document.getElementById("selectAno");
+var dataInicioDespesa = document.getElementById("dataInicioDespesa");
+var dataFimDespesa = document.getElementById("dataFimDespesa");
 const formaPagamentoSelect = document.getElementById("forma_pagamento");
-var selectMes = document.getElementById("selectMes");
 const despesasTable = document.getElementById("despesasTable").getElementsByTagName('tbody')[0];
 
 $(document).ready(function() {
 
   $("#btn-enviar").click(function() {
 	var objetoJSON = getCamposFormulario();
-	console.log(objetoJSON);
-	enviarObjetoJSON(objetoJSON, urlDestino, function (resposta) {
+	enviarObjetoJSON("POST", objetoJSON, urlDestino + "despesas", function (resposta) {
 		// Callback de sucesso
 		alert(resposta);
 		console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
@@ -301,10 +285,10 @@ function getCamposFormulario() {
 	return formDataJSON;
 }
 
-function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback) {
+function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, erroCallback) {
     // Configuração da requisição AJAX
     $.ajax({
-        type: "POST",
+        type: typeRequest,
         url: urlDestino,
         contentType: "application/json",
         data: JSON.stringify(objetoJSON),
@@ -326,7 +310,7 @@ function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback)
   // Função para carregar categorias via AJAX
   function carregarCategorias() {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias", true);
+    xhr.open("GET", urlDestino + "categorias", true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var categorias = JSON.parse(xhr.responseText);
@@ -344,7 +328,7 @@ function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback)
   // Função para carregar formas de pagamento via AJAX
   function carregarFormasPagamento() {
     var xhr = new XMLHttpRequest();
-    xhr.open("GET", "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/formaDePagamento", true);
+    xhr.open("GET", urlDestino + "formaDePagamento", true);
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var formasPagamento = JSON.parse(xhr.responseText);
@@ -361,34 +345,46 @@ function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback)
 
 // Função para carregar despesas via AJAX
 function carregarDespesas() {
-    var xhr = new XMLHttpRequest();
-	var mesSelecionado = selectMes.value.toUpperCase();
-	var anoSelecionado = selectAno.value;
-	console.log("Teste");
-    xhr.open("GET", "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/despesas/" + mesSelecionado + "/" + anoSelecionado, true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        var despesas = JSON.parse(xhr.responseText);
-        despesas.forEach(function(despesa) {
-		
-          var row = despesasTable.insertRow();
-          var cellData = row.insertCell(0);
-          var cellValor = row.insertCell(1);
-          var cellDescricao = row.insertCell(2);
-          var cellCategoria = row.insertCell(3);
-          var cellFormaPagamento = row.insertCell(4);
+	var dataInicio = dataInicioDespesa.value;
+	var dataFim = dataFimDespesa.value;
+  
+  var dataInicioFormatada = formatarDataEnvio(dataInicio);
+  var dataFimFormatada = formatarDataEnvio(dataFim);
 
-		  var dataFormatada = new Date(despesa.dataCadastro);
-          var dataString = ('0' + dataFormatada.getDate()).slice(-2) + '/' + ('0' + (dataFormatada.getMonth() + 1)).slice(-2) + '/' + dataFormatada.getFullYear();
-          cellData.innerHTML = dataString;
-          cellValor.innerHTML = despesa.valor.toFixed(2);
-          cellDescricao.innerHTML = despesa.descricao;
-          cellCategoria.innerHTML = despesa.categoria;
-          cellFormaPagamento.innerHTML = despesa.formaDePagamento;
-        });
-      }
-    };
-    xhr.send();
+  var objecto = {
+      "periodoInicio": dataInicioFormatada,
+      "periodoFim": dataFimFormatada
+  };
+
+  enviarObjetoJSON("POST", objecto, urlDestino + "despesas/list", function (resposta) {
+		montarTabela(resposta);
+		console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
+	}, function (erro) {
+		alert(erro);
+		// Callback de erro
+		console.error("Ocorreu um erro na requisição:", erro);
+	});
+}
+
+function montarTabela(dados) {
+  // Limpar a tabela antes de adicionar novas linhas
+  despesasTable.innerHTML = '';
+
+  dados.forEach(function(despesa) {
+    var row = despesasTable.insertRow();
+    var cellData = row.insertCell(0);
+    var cellValor = row.insertCell(1);
+    var cellDescricao = row.insertCell(2);
+    var cellCategoria = row.insertCell(3);
+    var cellFormaPagamento = row.insertCell(4);
+    var dataFormatada = new Date(despesa.dataCadastro);
+    var dataString = ('0' + dataFormatada.getDate()).slice(-2) + '/' + ('0' + (dataFormatada.getMonth() + 1)).slice(-2) + '/' + dataFormatada.getFullYear();
+    cellData.innerHTML = dataString;
+    cellValor.innerHTML = despesa.valor.toFixed(2);
+    cellDescricao.innerHTML = despesa.descricao;
+    cellCategoria.innerHTML = despesa.categoria;
+    cellFormaPagamento.innerHTML = despesa.formaDePagamento;
+  });
 }
 </script>
 
