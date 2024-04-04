@@ -174,6 +174,12 @@
 
   <label for="dataFimDespesa">Selecione a Data Fim</label>
   <input type="datetime-local" id="dataFimDespesa" name="dataFimDespesa" required>
+
+  <label for="categoriaDespesa">Categoria:</label>
+  <select id="categoriaDespesa" name="categoriaDespesa"></select>
+
+  <label for="forma_pagamentoDespesa">Forma de Pagamento:</label>
+  <select id="forma_pagamentoDespesa" name="forma_pagamentoDespesa"></select>
   
   
   <button id="btnConsultar">Consultar</button>
@@ -196,12 +202,16 @@
 
 <script>
 const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/";
-//const urlDestino = "http://192.168.1.11:8080/";
 const categoriaSelect = document.getElementById("categoria");
+const formaPagamentoSelect = document.getElementById("forma_pagamento");
+const categoriaDespesaSelect = document.getElementById("categoriaDespesa");
+const forma_pagamentoDespesaSelect = document.getElementById("forma_pagamentoDespesa");
 var dataInicioDespesa = document.getElementById("dataInicioDespesa");
 var dataFimDespesa = document.getElementById("dataFimDespesa");
-const formaPagamentoSelect = document.getElementById("forma_pagamento");
-const despesasTable = document.getElementById("despesasTable").getElementsByTagName('tbody')[0];
+
+var despesasTable = document.getElementById("despesasTable").getElementsByTagName('tbody')[0];
+
+
 
 $(document).ready(function() {
 
@@ -223,6 +233,8 @@ $(document).ready(function() {
   aplicarFormatacaoMoeda();
   carregarCategorias();
   carregarFormasPagamento();
+  carregarCategoriasDespeas();
+  carregarFormasPagamentoDespesas()
 });
 
 function formatarMoedaEnvio(valor) {
@@ -268,11 +280,11 @@ function aplicarFormatacaoMoeda() {
 function getCamposFormulario() {
 	var dataCadastro = document.getElementById("data_cadastro").value;
 	dataCadastro = formatarDataEnvio(dataCadastro);
-    var valor = document.getElementById("valor").value;
+  var valor = document.getElementById("valor").value;
 	valor = formatarMoedaEnvio(valor);
-    var descricao = document.getElementById("descricao").value;
-    var categoria = document.getElementById("categoria").value;
-    var formaPagamento = document.getElementById("forma_pagamento").value;
+  var descricao = document.getElementById("descricao").value;
+  var categoria = document.getElementById("categoria").value;
+  var formaPagamento = document.getElementById("forma_pagamento").value;
 	
 	var formDataJSON = {
       "dataCadastro": dataCadastro,
@@ -319,6 +331,29 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
           option.text = categoria.descricao;
           option.value = categoria.id;
           categoriaSelect.appendChild(option);
+          //categoriaDespesaSelect.appendChild(option);
+        });
+      }
+    };
+    xhr.send();
+  }
+
+  function carregarCategoriasDespeas() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", urlDestino + "categorias", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        var categorias = JSON.parse(xhr.responseText);
+        var todasOption = document.createElement("option");
+        todasOption.text = "Todas";
+        todasOption.value = "0"; // ou qualquer valor que represente "Todas"
+        categoriaDespesaSelect.appendChild(todasOption);
+
+        categorias.forEach(function(categoria) {
+          var option = document.createElement("option");
+          option.text = categoria.descricao;
+          option.value = categoria.id;
+          categoriaDespesaSelect.appendChild(option);
         });
       }
     };
@@ -337,11 +372,36 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
           option.text = formaPagamento.descricao;
           option.value = formaPagamento.id;
           formaPagamentoSelect.appendChild(option);
+          //forma_pagamentoDespesaSelect.appendChild(option);
         });
       }
     };
     xhr.send();
   }
+
+  // Função para carregar formas de pagamento via AJAX
+  function carregarFormasPagamentoDespesas() {
+    var xhr = new XMLHttpRequest();
+    xhr.open("GET", urlDestino + "formaDePagamento", true);
+    xhr.onreadystatechange = function() {
+      if (xhr.readyState == 4 && xhr.status == 200) {
+        var formasPagamento = JSON.parse(xhr.responseText);
+        // Criar opção "Todas"
+        var todasOption = document.createElement("option");
+        todasOption.text = "Todas";
+        todasOption.value = "0"; // ou qualquer valor que represente "Todas"
+        forma_pagamentoDespesaSelect.appendChild(todasOption);
+
+        formasPagamento.forEach(function(formaPagamento) {
+          var option = document.createElement("option");
+          option.text = formaPagamento.descricao;
+          option.value = formaPagamento.id;          
+          forma_pagamentoDespesaSelect.appendChild(option);
+        });
+      }
+    };
+    xhr.send();
+  }  
 
 // Função para carregar despesas via AJAX
 function carregarDespesas() {
@@ -350,10 +410,14 @@ function carregarDespesas() {
   
   var dataInicioFormatada = formatarDataEnvio(dataInicio);
   var dataFimFormatada = formatarDataEnvio(dataFim);
+  var categoriaId = document.getElementById("categoriaDespesa").value;
+  var formaPagamentoId = document.getElementById("forma_pagamentoDespesa").value;
 
   var objecto = {
       "periodoInicio": dataInicioFormatada,
-      "periodoFim": dataFimFormatada
+      "periodoFim": dataFimFormatada,
+      "categoriaId": Number(categoriaId),
+      "formaPagamentoId": Number(formaPagamentoId)
   };
 
   enviarObjetoJSON("POST", objecto, urlDestino + "despesas/list", function (resposta) {
@@ -370,6 +434,8 @@ function montarTabela(dados) {
   // Limpar a tabela antes de adicionar novas linhas
   despesasTable.innerHTML = '';
 
+  var totalDespesas = 0;
+
   dados.forEach(function(despesa) {
     var row = despesasTable.insertRow();
     var cellData = row.insertCell(0);
@@ -384,7 +450,17 @@ function montarTabela(dados) {
     cellDescricao.innerHTML = despesa.descricao;
     cellCategoria.innerHTML = despesa.categoria;
     cellFormaPagamento.innerHTML = despesa.formaDePagamento;
+
+    // Somar ao total de despesas
+    totalDespesas += despesa.valor;
   });
+
+  // Adicionar uma nova linha para exibir o valor total
+    var totalRow = despesasTable.insertRow();
+    var totalCellLabel = totalRow.insertCell(0);
+    var totalCellValue = totalRow.insertCell(1);
+    totalCellLabel.innerHTML = "Total:";
+    totalCellValue.innerHTML = totalDespesas.toFixed(2);
 }
 </script>
 
