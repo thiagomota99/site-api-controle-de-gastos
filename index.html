@@ -4,6 +4,11 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Despesas</title>
+
+<!-- Font Awesome -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" />
+
+
 <!-- Referência ao jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <style>
@@ -14,6 +19,11 @@
     padding: 0;
   }
   
+  .fixed-height-table tbody {
+    max-height: 500px; /* Defina a altura máxima desejada */
+    overflow-y: auto; /* Adiciona scroll vertical quando a altura máxima é atingida */
+  }
+
   #btnConsultar {
     background-color: #4CAF50;
     border: none;
@@ -102,6 +112,12 @@
   input[type="submit"]:hover {
     background-color: #45a049;
   }
+
+  .acao-icon {
+        font-size: 20px; /* Tamanho do ícone */
+        margin-right: 5px; /* Margem à direita para espaçamento */
+        cursor: pointer;
+  }  
 
   @media screen and (max-width: 768px) {
     .container {
@@ -192,6 +208,7 @@
         <th>Descrição</th>
         <th>Categoria</th>
         <th>Forma de Pagamento</th>
+        <th>Ações</th>
       </tr>
     </thead>
     <tbody>
@@ -201,7 +218,8 @@
 </div>
 
 <script>
-const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/";
+//const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/";
+const urlDestino = "http://localhost:8080/"
 const categoriaSelect = document.getElementById("categoria");
 const formaPagamentoSelect = document.getElementById("forma_pagamento");
 const categoriaDespesaSelect = document.getElementById("categoriaDespesa");
@@ -443,6 +461,8 @@ function montarTabela(dados) {
     var cellDescricao = row.insertCell(2);
     var cellCategoria = row.insertCell(3);
     var cellFormaPagamento = row.insertCell(4);
+    var cellAcoes = row.insertCell(5); // Nova célula para a coluna de ações
+
     var dataFormatada = new Date(despesa.dataCadastro);
     var dataString = ('0' + dataFormatada.getDate()).slice(-2) + '/' + ('0' + (dataFormatada.getMonth() + 1)).slice(-2) + '/' + dataFormatada.getFullYear();
     cellData.innerHTML = dataString;
@@ -450,7 +470,20 @@ function montarTabela(dados) {
     cellDescricao.innerHTML = despesa.descricao;
     cellCategoria.innerHTML = despesa.categoria;
     cellFormaPagamento.innerHTML = despesa.formaDePagamento;
+    
+    // Ícone de edição (lápis)
+    var editIcon = document.createElement("i");
+    editIcon.className = "fas fa-pencil-alt acao-icon"; // Adicione a classe do ícone de edição
+    cellAcoes.appendChild(editIcon);
 
+    // Ícone de exclusão (x)
+    var deleteIcon = document.createElement("i");
+    deleteIcon.className = "fas fa-times acao-icon"; // Adicione a classe do ícone de exclusão
+    deleteIcon.onclick = function() {
+        deletarDespesa(despesa.id); // Chamada da função deletarDespesa com o id da despesa como argumento
+    };
+    cellAcoes.appendChild(deleteIcon);
+    
     // Somar ao total de despesas
     totalDespesas += despesa.valor;
   });
@@ -461,6 +494,60 @@ function montarTabela(dados) {
     var totalCellValue = totalRow.insertCell(1);
     totalCellLabel.innerHTML = "Total:";
     totalCellValue.innerHTML = totalDespesas.toFixed(2);
+}
+
+function deletarDespesa(id) {
+  $.ajax({
+        type: "DELETE",
+        url: urlDestino + "despesas/" + id,
+        success: function (resposta) {
+          console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
+          reloadTabela();
+        },
+        error: function (xhr, status, error) {
+          console.error("Ocorreu um erro na requisição:", erro);
+          alert(error);          
+        }
+    });
+}
+
+function reloadTabela() {
+  var dataInicio = new Date(); // Obtém a data atual
+  var dataFim = new Date();
+  // Obtém o dia, mês e ano
+  var diaInicio = ('0' + dataInicio.getDate()).slice(-2); // Adiciona zero à esquerda se for menor que 10
+  var mesInicio = ('0' + (dataInicio.getMonth() + 1)).slice(-2); // Adiciona 1 ao mês, e adiciona zero à esquerda se for menor que 10
+  var anoInicio = dataInicio.getFullYear();
+  var horaInicio = "00:00";
+
+  var diaFim = ('0' + dataInicio.getDate()).slice(-2); // Adiciona zero à esquerda se for menor que 10
+  var mesFim = ('0' + (dataInicio.getMonth() + 2)).slice(-2); // Adiciona 1 ao mês, e adiciona zero à esquerda se for menor que 10
+  var anoFim = dataInicio.getFullYear();
+  var horaFim = "23:59";
+
+
+  var dataInicioString = anoInicio + '-' + mesInicio + '-' + diaInicio + " " + horaInicio;
+  var dataFimString = anoFim + '-' + mesFim + '-' + diaFim + " " + horaFim;
+  var categoriaId = 0;
+  var formaPagamentoId = 0;
+
+  var objecto = {
+      "periodoInicio": dataInicioString,
+      "periodoFim": dataFimString,
+      "categoriaId": categoriaId,
+      "formaPagamentoId": formaPagamentoId
+  };
+
+  console.log("Objeto de envio: " + objecto);
+
+  enviarObjetoJSON("POST", objecto, urlDestino + "despesas/list", function (resposta) {
+		montarTabela(resposta);
+		console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
+	}, function (erro) {
+		alert(erro);
+		// Callback de erro
+		console.error("Ocorreu um erro na requisição:", erro);
+	});
 }
 </script>
 
