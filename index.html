@@ -8,6 +8,8 @@
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" />
 
+<!-- Adicionando o CSS do Bootstrap -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
 
 <!-- Referência ao jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
@@ -215,15 +217,75 @@
       <!-- Os dados da tabela serão preenchidos via AJAX -->
     </tbody>
   </table>
+
+  <!-- Modal -->
+  <div class="modal fade" id="myModalEditaDespesa" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Editando Despesa</h5>
+          <button type="button" class="close" data-dismiss="modal" aria-label="Fechar">
+            <span aria-hidden="true">&times;</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form>
+            <div class="form-group">
+              <label for="idEditaDespesa">Id:</label>
+              <input type="text" class="form-control" id="idEditaDespesa" name="idEditaDespesa" disabled required>
+            </div>
+
+            <div class="form-group">
+              <label for="data_cadastroEdita">Data de Cadastro:</label>
+              <input type="datetime-local" class="form-control" id="data_cadastroEdita" name="data_cadastroEdita" required>
+            </div>
+
+            <div class="form-group">
+              <label for="valorEdita">Valor:</label>
+              <input type="text" id="valorEdita" name="valorEdita" pattern="\d+(\.\d{2})?" placeholder="XX.XX" title="Informe o valor no formato XX.XX" required>
+            </div>
+
+            <div class="form-group">
+              <label for="descricaoEdita">Descrição:</label>
+              <textarea class="form-control" id="descricaoEdita" name="descricaoEdita" rows="4" required></textarea>
+            </div>
+
+            <div class="form-group">
+              <label for="categoriaEdita">Categoria:</label>
+              <select class="form-control" id="categoriaEdita" name="categoriaEdita"></select>
+            </div>
+
+            <div class="form-group">
+              <label for="forma_pagamentoEdita">Forma de Pagamento:</label>
+              <select class="form-control" id="forma_pagamentoEdita" name="forma_pagamentoEdita"></select>
+            </div>
+
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">Fechar</button>
+          <button type="button" class="btn btn-primary" id="btn-enviarEdita">Enviar</button>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
 const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/";
 //const urlDestino = "http://localhost:8080/"
+
 const categoriaSelect = document.getElementById("categoria");
-const formaPagamentoSelect = document.getElementById("forma_pagamento");
 const categoriaDespesaSelect = document.getElementById("categoriaDespesa");
-const forma_pagamentoDespesaSelect = document.getElementById("forma_pagamentoDespesa");
+const categoriDespesaSelectEditar = document.getElementById("categoriaEdita");
+const arraySelectsCategorias = new Array(categoriaSelect,categoriaDespesaSelect,categoriDespesaSelectEditar);
+
+const formaPagamentoSelect = document.getElementById("forma_pagamento");
+const formaPagamentoDespesaSelect = document.getElementById("forma_pagamentoDespesa");
+const formaPagamentoEditarSelect = document.getElementById("forma_pagamentoEdita");
+const arraySelectsFormaDePagamento = new Array(formaPagamentoSelect,formaPagamentoDespesaSelect,formaPagamentoEditarSelect);
+
 var dataInicioDespesa = document.getElementById("dataInicioDespesa");
 var dataFimDespesa = document.getElementById("dataFimDespesa");
 
@@ -234,25 +296,24 @@ var despesasTable = document.getElementById("despesasTable").getElementsByTagNam
 $(document).ready(function() {
 
   $("#btn-enviar").click(function() {
-	var objetoJSON = getCamposFormulario();
-	enviarObjetoJSON("POST", objetoJSON, urlDestino + "despesas", function (resposta) {
-		// Callback de sucesso
-		alert(resposta);
-		console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
-	}, function (erro) {
-		alert(erro);
-		// Callback de erro
-		console.error("Ocorreu um erro na requisição:", erro);
-	});
+	  var objetoJSON = getCamposFormulario();
+    enviarObjetoJSON("POST", objetoJSON, urlDestino + "despesas", function (resposta) {
+      // Callback de sucesso
+      alert(resposta);
+      console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
+    }, function (erro) {
+      alert(erro);
+      // Callback de erro
+      console.error("Ocorreu um erro na requisição:", erro);
+    });
   });
   
   $("#btnConsultar").click(carregarDespesas);
+  $("#btn-enviarEdita").click(editarDespesa)
 	
   aplicarFormatacaoMoeda();
   carregarCategorias();
   carregarFormasPagamento();
-  carregarCategoriasDespeas();
-  carregarFormasPagamentoDespesas()
 });
 
 function formatarMoedaEnvio(valor) {
@@ -281,17 +342,20 @@ function formatarMoeda(valor) {
 // Função para aplicar formatação de moeda ao campo de entrada
 function aplicarFormatacaoMoeda() {
     var inputValor = document.getElementById('valor');
-
-    // Adiciona evento de entrada para formatar dinamicamente o valor conforme o usuário digita
-    inputValor.addEventListener('input', function() {
+    var inputEditarValor = document.getElementById("valorEdita");
+    var arrayInputs = new Array(inputValor,inputEditarValor);
+    
+    arrayInputs.forEach(function(element) {
+      element.addEventListener('input',function() {
         // Obtém o valor atual do campo
-        var valorAtual = inputValor.value;
+        var valorAtual = element.value;
 
         // Formata o valor como moeda
         var valorFormatado = formatarMoeda(valorAtual);
 
         // Define o valor formatado de volta no campo
-        inputValor.value = valorFormatado;
+        element.value = valorFormatado;
+      });
     });
 }
 
@@ -344,34 +408,19 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var categorias = JSON.parse(xhr.responseText);
-        categorias.forEach(function(categoria) {
-          var option = document.createElement("option");
-          option.text = categoria.descricao;
-          option.value = categoria.id;
-          categoriaSelect.appendChild(option);
-          //categoriaDespesaSelect.appendChild(option);
-        });
-      }
-    };
-    xhr.send();
-  }
 
-  function carregarCategoriasDespeas() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", urlDestino + "categorias", true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        var categorias = JSON.parse(xhr.responseText);
         var todasOption = document.createElement("option");
         todasOption.text = "Todas";
-        todasOption.value = "0"; // ou qualquer valor que represente "Todas"
+        todasOption.value = "0";
         categoriaDespesaSelect.appendChild(todasOption);
 
         categorias.forEach(function(categoria) {
-          var option = document.createElement("option");
-          option.text = categoria.descricao;
-          option.value = categoria.id;
-          categoriaDespesaSelect.appendChild(option);
+          arraySelectsCategorias.forEach(function(element) {
+            var option = document.createElement("option");
+            option.text = categoria.descricao;
+            option.value = categoria.id;
+            element.appendChild(option);
+          });
         });
       }
     };
@@ -385,41 +434,25 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var formasPagamento = JSON.parse(xhr.responseText);
+
+        // Criar opção "Todas"
+        var todasOption = document.createElement("option");
+        todasOption.text = "Todas";
+        todasOption.value = "0";
+        formaPagamentoDespesaSelect.appendChild(todasOption);
+
         formasPagamento.forEach(function(formaPagamento) {
-          var option = document.createElement("option");
-          option.text = formaPagamento.descricao;
-          option.value = formaPagamento.id;
-          formaPagamentoSelect.appendChild(option);
-          //forma_pagamentoDespesaSelect.appendChild(option);
+          arraySelectsFormaDePagamento.forEach(function(element){
+            var option = document.createElement("option");
+            option.text = formaPagamento.descricao;
+            option.value = formaPagamento.id;
+            element.appendChild(option);
+          });
         });
       }
     };
     xhr.send();
   }
-
-  // Função para carregar formas de pagamento via AJAX
-  function carregarFormasPagamentoDespesas() {
-    var xhr = new XMLHttpRequest();
-    xhr.open("GET", urlDestino + "formaDePagamento", true);
-    xhr.onreadystatechange = function() {
-      if (xhr.readyState == 4 && xhr.status == 200) {
-        var formasPagamento = JSON.parse(xhr.responseText);
-        // Criar opção "Todas"
-        var todasOption = document.createElement("option");
-        todasOption.text = "Todas";
-        todasOption.value = "0"; // ou qualquer valor que represente "Todas"
-        forma_pagamentoDespesaSelect.appendChild(todasOption);
-
-        formasPagamento.forEach(function(formaPagamento) {
-          var option = document.createElement("option");
-          option.text = formaPagamento.descricao;
-          option.value = formaPagamento.id;          
-          forma_pagamentoDespesaSelect.appendChild(option);
-        });
-      }
-    };
-    xhr.send();
-  }  
 
 // Função para carregar despesas via AJAX
 function carregarDespesas() {
@@ -474,6 +507,10 @@ function montarTabela(dados) {
     // Ícone de edição (lápis)
     var editIcon = document.createElement("i");
     editIcon.className = "fas fa-pencil-alt acao-icon"; // Adicione a classe do ícone de edição
+    editIcon.onclick = function() {
+      carregarModalDespesa(despesa);
+      $('#myModalEditaDespesa').modal('show');
+    }
     cellAcoes.appendChild(editIcon);
 
     // Ícone de exclusão (x)
@@ -510,6 +547,72 @@ function deletarDespesa(id) {
         }
     });
 }
+
+function carregarModalDespesa(despesa) {
+  var dataDespesa = new Date(despesa.dataCadastro);
+  dataDespesa.setHours(dataDespesa.getHours() - 3);
+  var dataDespesaFormatada = dataDespesa.toISOString().slice(0, 16);
+  var dataCadastro = document.getElementById("data_cadastroEdita").value = dataDespesaFormatada;
+
+  var id = document.getElementById("idEditaDespesa").value = despesa.id;
+  var valor = document.getElementById("valorEdita").value = despesa.valor.toFixed(2);
+  var descricao = document.getElementById("descricaoEdita").value = despesa.descricao;
+  var categoriaId = selecionarCategoriaPorNome(despesa.categoria);
+  var formaPagamentoId = selecionarFormaPagamentoPorNome(despesa.formaDePagamento);
+}
+
+function editarDespesa() {
+  var id = document.getElementById("idEditaDespesa").value;
+  var valor = document.getElementById("valorEdita").value;
+  var descricao = document.getElementById("descricaoEdita").value;
+  var categoriaId = categoriDespesaSelectEditar.value;
+  var formaPagamentoId = formaPagamentoEditarSelect.value;
+  var dataDespesa = document.getElementById("data_cadastroEdita").value
+  var dataFormatada = formatarDataEnvio(dataDespesa);
+ 
+  var objecto = {
+      "id": Number(id),
+      "descricao": descricao,
+      "data": dataFormatada,
+      "valor": formatarMoedaEnvio(valor),
+      "formaPagamentoId": Number(formaPagamentoId),
+      "categoriaId": Number(categoriaId)
+  };
+
+  enviarObjetoJSON("PUT", objecto, urlDestino + "despesas", function (resposta) {    
+      alert("Despesa editada com sucesso!");
+      console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
+      $('#myModalEditaDespesa').modal('hide');
+    }, function (erro) {
+      alert(erro);
+      console.error("Ocorreu um erro na requisição:", erro);
+    });
+}
+
+function selecionarCategoriaPorNome(nome) {
+    var select = categoriDespesaSelectEditar;
+    var options = categoriDespesaSelectEditar.options;
+
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].text === nome) {
+            select.selectedIndex = i;
+            break;
+        }
+    }
+}
+
+function selecionarFormaPagamentoPorNome(nome) {
+    var select = formaPagamentoEditarSelect;
+    var options = formaPagamentoEditarSelect.options;
+
+    for (var i = 0; i < options.length; i++) {
+        if (options[i].text === nome) {
+            select.selectedIndex = i;
+            break;
+        }
+    }
+}
+
 
 function reloadTabela() {
   var dataInicio = new Date(); // Obtém a data atual
