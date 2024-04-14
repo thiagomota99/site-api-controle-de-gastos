@@ -148,6 +148,9 @@ function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback)
         url: urlDestino,
         contentType: "application/json",
         data: JSON.stringify(objetoJSON),
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },        
         success: function (resposta) {
             // Chamada ao callback de sucesso
             if (sucessoCallback && typeof sucessoCallback === "function") {

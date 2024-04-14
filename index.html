@@ -387,6 +387,9 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
         url: urlDestino,
         contentType: "application/json",
         data: JSON.stringify(objetoJSON),
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },        
         success: function (resposta) {
             // Chamada ao callback de sucesso
             if (sucessoCallback && typeof sucessoCallback === "function") {
@@ -406,6 +409,7 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
   function carregarCategorias() {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", urlDestino + "categorias", true);
+    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("token"));
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var categorias = JSON.parse(xhr.responseText);
@@ -432,6 +436,7 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
   function carregarFormasPagamento() {
     var xhr = new XMLHttpRequest();
     xhr.open("GET", urlDestino + "formaDePagamento", true);
+    xhr.setRequestHeader("Authorization", "Bearer " + localStorage.getItem("token"));
     xhr.onreadystatechange = function() {
       if (xhr.readyState == 4 && xhr.status == 200) {
         var formasPagamento = JSON.parse(xhr.responseText);
