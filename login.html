@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Tela de Login</title>
+<!-- Adicionando o CSS do Bootstrap -->
+<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+<style>
+  body {
+    height: 100%;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f4f4f4;
+  }
+  .container {
+    margin-top: 50px;
+    max-width: 400px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    padding: 40px;
+  }
+  h2 {
+    text-align: center;
+    margin-bottom: 30px;
+  }
+  .form-group {
+    margin-bottom: 20px;
+  }
+
+  /*.dotlottie-player-wrapper {
+    max-width: 100%;
+    max-height: 100%;
+    width: auto !important;
+    height: auto !important;
+  }*/
+</style>
+</head>
+<body>
+
+<div class="container">
+  <h2>Tela de Login</h2>
+  <form id="loginForm">
+    <div class="form-group">
+      <label for="login">Login:</label>
+      <input type="text" class="form-control" id="login" name="login" required>
+    </div>
+    <div class="form-group">
+      <label for="senha">Senha:</label>
+      <input type="password" class="form-control" id="senha" name="senha" required>
+    </div>
+    <button type="submit" class="btn btn-primary btn-block">Login</button>
+  </form>
+</div>
+
+<!-- Adicionando o JavaScript do Bootstrap -->
+<script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.0/dist/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- 
+<script src="https://unpkg.com/@dotlottie/player-component@latest/dist/dotlottie-player.mjs" type="module"></script>
+<dotlottie-player src="https://lottie.host/e424dfc3-0565-451a-8e8f-b21194900bda/FySbZk7wWX.json" speed="1" style="width: 300px; height: 300px" direction="1" playMode="normal" class="dotlottie-player-wrapper" loop autoplay></dotlottie-player>
+-->
+
+<script>
+
+const urlDestino = "http://localhost:8080/auth/login";
+// Função para enviar os dados de login via AJAX
+$(document).ready(function() {
+  isAuthenticate();    
+  $('#loginForm').submit(function(e){
+    e.preventDefault(); // Impede o formulário de fazer uma submissão normal
+    $('#loadingGif').show();
+    var loginData = {
+      login: $('#login').val(),
+      senha: $('#senha').val()
+    };
+    $.ajax({
+      type: 'POST',
+      url: urlDestino,
+      contentType: 'application/json',
+      data: JSON.stringify(loginData),
+      success: function(response){
+        console.log('Login bem-sucedido');
+        window.location = "index.html";
+        console.log("Guardando o token do usuário no LocalStorage do navegador");
+        localStorage.setItem("token",response.token);        
+      },
+      error: function(xhr, status, error) {
+        alert(xhr.responseText);
+        console.error('Erro ao tentar fazer login:', xhr.responseText);
+      }
+    });
+  });
+});
+
+function isAuthenticate() {
+    if(localStorage.getItem("token") != null) 
+        window.location = "index.html";
+}
+</script>
+
+</body>
+</html>
