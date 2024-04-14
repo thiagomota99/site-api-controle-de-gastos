@@ -163,6 +163,7 @@
   <nav>
     <a href="index.html">Despesa</a>
     <a href="categorias.html">Categoria</a>
+    <a href="login.html" onclick="logoff()">Logoff</a>
   </nav>
 
   <h2>Cadastrar Despesa</h2>
@@ -294,7 +295,7 @@ var despesasTable = document.getElementById("despesasTable").getElementsByTagNam
 
 
 $(document).ready(function() {
-
+  isAuthenticate();
   $("#btn-enviar").click(function() {
 	  var objetoJSON = getCamposFormulario();
     enviarObjetoJSON("POST", objetoJSON, urlDestino + "despesas", function (resposta) {
@@ -651,6 +652,16 @@ function reloadTabela() {
 		// Callback de erro
 		console.error("Ocorreu um erro na requisição:", erro);
 	});
+}
+
+function logoff() {
+  localStorage.clear();
+  window.location = "login.html";
+}
+
+function isAuthenticate() {
+  if(localStorage.getItem("token") == null) 
+    logoff();    
 }
 </script>
 

@@ -110,6 +110,7 @@
 		<nav>
 			<a href="index.html">Despesa</a>
 			<a href="categorias.html">Categoria</a>
+            <a href="login.html" onclick="logoff()">Logoff</a>
 		</nav>
 		<hr>
 		
@@ -211,6 +212,15 @@ function displayData(data) {
                 responseDiv.innerHTML += categoriesTable;
             }
         }
+function logoff() {
+  localStorage.clear();
+  window.location = "login.html";
+}
+
+function isAuthenticate() {
+  if(localStorage.getItem("token") == null) 
+    logoff();    
+}        
     </script>
 </body>
 </html>
