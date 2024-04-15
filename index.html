@@ -543,6 +543,9 @@ function deletarDespesa(id) {
   $.ajax({
         type: "DELETE",
         url: urlDestino + "despesas/" + id,
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },
         success: function (resposta) {
           console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
           reloadTabela();
