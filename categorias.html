@@ -126,7 +126,7 @@
 const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias"
 
 $(document).ready(function() {
-
+  isAuthenticate();
   $("#btnCadastrarCategoria").click(function() {
 	var objetoJSON = getCamposFormulario();
 	enviarObjetoJSON(objetoJSON, urlDestino, function (resposta) {
