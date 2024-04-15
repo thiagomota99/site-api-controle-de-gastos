@@ -177,7 +177,14 @@ function getCamposFormulario() {
 }
 
 function fetchData() {
-    fetch('http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias')
+    // Configuração da requisição
+    var configuracaoRequisicao = {
+        method: "GET",
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        }
+    };
+    fetch('http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/categorias', configuracaoRequisicao)
         .then(response => response.json())
         .then(data => {
             // Processar os dados recebidos
