@@ -115,6 +115,22 @@
     background-color: #45a049;
   }
 
+  .radio-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+
+  .radio-group input {
+    margin-right: 10px;
+  }
+  
+  label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+  }  
+
   .acao-icon {
         font-size: 20px; /* Tamanho do ícone */
         margin-right: 5px; /* Margem à direita para espaçamento */
@@ -166,6 +182,9 @@
     <a href="login.html" onclick="logoff()">Logoff</a>
   </nav>
 
+  <div>
+
+  
   <h2>Cadastrar Despesa</h2>
 
     <label for="data_cadastro">Data de Cadastro:</label>
@@ -183,8 +202,17 @@
     <label for="forma_pagamento">Forma de Pagamento:</label>
     <select id="forma_pagamento" name="forma_pagamento"></select>
 
-    <input type="button" id="btn-enviar" value="Enviar">
+    <label>Despesa Fixa?</label>
+    <div class="radio-group">
+      <input type="radio" id="fixa" name="tipoDespesa" value="true" required>
+      <label for="fixa">Sim</label>
+    </div>
+    <div class="radio-group">
+      <input type="radio" id="variavel" name="tipoDespesa" value="false" required>
+      <label for="variavel">Não</label>
+    </div>
 
+    <input type="button" id="btn-enviar" value="Enviar">
   <hr>
 
   <h2>Despesas</h2>
@@ -200,6 +228,12 @@
   <label for="forma_pagamentoDespesa">Forma de Pagamento:</label>
   <select id="forma_pagamentoDespesa" name="forma_pagamentoDespesa"></select>
   
+  <label for="tipoDespesa">Tipo de Despesa:</label>
+  <select id="tipoDespesaSelect" name="tipoDespesa" required>
+    <option value="false">Todas</option>
+    <option value="true">Fixa</option>
+    <option value="false">Variável</option>
+  </select>
   
   <button id="btnConsultar">Consultar</button>
   <hr>
@@ -275,8 +309,8 @@
 <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 <script>
 isAuthenticate();
-const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/";
-//const urlDestino = "http://localhost:8080/"
+//const urlDestino = "http://ec2-3-21-19-165.us-east-2.compute.amazonaws.com:8080/";
+const urlDestino = "http://localhost:8080/"
 
 const categoriaSelect = document.getElementById("categoria");
 const categoriaDespesaSelect = document.getElementById("categoriaDespesa");
@@ -369,13 +403,20 @@ function getCamposFormulario() {
   var descricao = document.getElementById("descricao").value;
   var categoria = document.getElementById("categoria").value;
   var formaPagamento = document.getElementById("forma_pagamento").value;
+  var radios = document.getElementsByName("tipoDespesa");
+  var fixa = false;
+
+  for(var i = 0; i < radios.length; i++)
+    if(radios[i].checked)
+        fixa = radios[i].value;
 	
 	var formDataJSON = {
       "dataCadastro": dataCadastro,
       "valor": valor,
       "descricao": descricao,
       "categoriaId": categoria,
-      "formaPagamentoId": formaPagamento
+      "formaPagamentoId": formaPagamento,
+      "fixa": fixa
     };
 	
 	return formDataJSON;
@@ -470,12 +511,14 @@ function carregarDespesas() {
   var dataFimFormatada = formatarDataEnvio(dataFim);
   var categoriaId = document.getElementById("categoriaDespesa").value;
   var formaPagamentoId = document.getElementById("forma_pagamentoDespesa").value;
+  var isFixa = document.getElementById("tipoDespesaSelect").value;
 
   var objecto = {
       "periodoInicio": dataInicioFormatada,
       "periodoFim": dataFimFormatada,
       "categoriaId": Number(categoriaId),
-      "formaPagamentoId": Number(formaPagamentoId)
+      "formaPagamentoId": Number(formaPagamentoId),
+      "fixa": isFixa
   };
 
   enviarObjetoJSON("POST", objecto, urlDestino + "despesas/list", function (resposta) {
