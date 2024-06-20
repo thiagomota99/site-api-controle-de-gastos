@@ -230,9 +230,9 @@
   
   <label for="tipoDespesa">Tipo de Despesa:</label>
   <select id="tipoDespesaSelect" name="tipoDespesa" required>
-    <option value="false">Todas</option>
-    <option value="true">Fixa</option>
-    <option value="false">Variável</option>
+    <option value="0">Todas</option>
+    <option value="2">Fixa</option>
+    <option value="1">Variável</option>
   </select>
   
   <button id="btnConsultar">Consultar</button>
@@ -511,14 +511,14 @@ function carregarDespesas() {
   var dataFimFormatada = formatarDataEnvio(dataFim);
   var categoriaId = document.getElementById("categoriaDespesa").value;
   var formaPagamentoId = document.getElementById("forma_pagamentoDespesa").value;
-  var isFixa = document.getElementById("tipoDespesaSelect").value;
+  var tipoDespesa = document.getElementById("tipoDespesaSelect").value;
 
   var objecto = {
       "periodoInicio": dataInicioFormatada,
       "periodoFim": dataFimFormatada,
       "categoriaId": Number(categoriaId),
       "formaPagamentoId": Number(formaPagamentoId),
-      "fixa": isFixa
+      "tipoDespesa": tipoDespesa
   };
 
   enviarObjetoJSON("POST", objecto, urlDestino + "despesas/list", function (resposta) {
