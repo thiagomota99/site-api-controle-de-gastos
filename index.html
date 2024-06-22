@@ -190,6 +190,9 @@
     <label for="data_cadastro">Data de Cadastro:</label>
     <input type="datetime-local" id="data_cadastro" name="dataCadastro" required>
 
+    <label for="data_cadastro">Data de Vencimento</label>
+    <input type="datetime-local" id="data_vencimento" name="data_vencimento">    
+
     <label for="valor">Valor:</label>
     <input type="text" id="valor" name="valor" pattern="\d+(\.\d{2})?" placeholder="XX.XX" title="Informe o valor no formato XX.XX" required>
 
@@ -398,12 +401,22 @@ function aplicarFormatacaoMoeda() {
 function getCamposFormulario() {
 	var dataCadastro = document.getElementById("data_cadastro").value;
 	dataCadastro = formatarDataEnvio(dataCadastro);
+
+  console.log(document.getElementById("data_vencimento").value);
+  var dataVencimento = null;
+  if(document.getElementById("data_vencimento").value != "" && document.getElementById("data_vencimento").value != null && document.getElementById("data_vencimento").value != undefined) {
+    dataVencimento = document.getElementById("data_vencimento").value;
+    dataVencimento = formatarDataEnvio(dataVencimento);
+  }
+
+  
   var valor = document.getElementById("valor").value;
 	valor = formatarMoedaEnvio(valor);
   var descricao = document.getElementById("descricao").value;
   var categoria = document.getElementById("categoria").value;
   var formaPagamento = document.getElementById("forma_pagamento").value;
   var radios = document.getElementsByName("tipoDespesa");
+
   var fixa = false;
 
   for(var i = 0; i < radios.length; i++)
@@ -416,7 +429,8 @@ function getCamposFormulario() {
       "descricao": descricao,
       "categoriaId": categoria,
       "formaPagamentoId": formaPagamento,
-      "fixa": fixa
+      "fixa": fixa,
+      "dataVencimento": dataVencimento
     };
 	
 	return formDataJSON;
@@ -686,12 +700,14 @@ function reloadTabela() {
   var dataFimString = anoFim + '-' + mesFim + '-' + diaFim + " " + horaFim;
   var categoriaId = 0;
   var formaPagamentoId = 0;
+  var tipoDespesa = document.getElementById("tipoDespesaSelect").value;
 
   var objecto = {
       "periodoInicio": dataInicioString,
       "periodoFim": dataFimString,
       "categoriaId": categoriaId,
-      "formaPagamentoId": formaPagamentoId
+      "formaPagamentoId": formaPagamentoId,
+      "tipoDespesa": tipoDespesa
   };
 
   console.log("Objeto de envio: " + objecto);
