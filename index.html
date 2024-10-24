@@ -4,183 +4,29 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Despesas</title>
-
 <!-- Font Awesome -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css" crossorigin="anonymous" />
 
+<!-- Estilo CSS -->
+<link rel="stylesheet" href="estilo/style.css">
 <!-- Adicionando o CSS do Bootstrap -->
 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-
 <!-- Referência ao jQuery -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-<style>
-  body {
-    font-family: Arial, sans-serif;
-    background-color: #f4f4f4;
-    margin: 0;
-    padding: 0;
-  }
-  
-  .fixed-height-table tbody {
-    max-height: 500px; /* Defina a altura máxima desejada */
-    overflow-y: auto; /* Adiciona scroll vertical quando a altura máxima é atingida */
-  }
-
-  #btnConsultar {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 10px 20px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin-top: 10px;
-    cursor: pointer;
-    border-radius: 5px;
-  }
-
-  #btnConsultar:hover {
-    background-color: #45a049;
-  }
-  
-  #btn-enviar {
-    background-color: #4CAF50;
-    border: none;
-    color: white;
-    padding: 15px 32px;
-    text-align: center;
-    text-decoration: none;
-    display: inline-block;
-    font-size: 16px;
-    margin: 4px 2px;
-    cursor: pointer;
-    border-radius: 8px;
-  }
-  
-  .container {
-    max-width: 800px;
-    margin: 20px auto;
-    padding: 20px;
-    background-color: #fff;
-    border-radius: 8px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-  }
-
-  table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 20px;
-  }
-
-  th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-  }
-
-  th {
-    background-color: #f2f2f2;
-  }
-
-  label {
-    display: block;
-    margin-bottom: 5px;
-  }
-
-  input[type="datetime-local"],
-  input[type="text"],
-  textarea,
-  select {
-    width: calc(100% - 20px);
-    padding: 10px;
-    margin-bottom: 15px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
-    box-sizing: border-box;
-    font-size: 16px;
-  }
-
-  input[type="submit"] {
-    background-color: #4caf50;
-    color: #fff;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 16px;
-  }
-
-  input[type="submit"]:hover {
-    background-color: #45a049;
-  }
-
-  .radio-group {
-    display: flex;
-    align-items: center;
-    margin-bottom: 15px;
-  }
-
-  .radio-group input {
-    margin-right: 10px;
-  }
-  
-  label {
-    display: block;
-    margin-bottom: 5px;
-    font-weight: bold;
-  }  
-
-  .acao-icon {
-        font-size: 20px; /* Tamanho do ícone */
-        margin-right: 5px; /* Margem à direita para espaçamento */
-        cursor: pointer;
-  }  
-
-  @media screen and (max-width: 768px) {
-    .container {
-      width: 90%;
-    }
-  }
-
-        /* Estilos da barra de navegação */
-        nav {
-            background-color: #333; /* Cor de fundo */
-            overflow: hidden;
-        }
-
-        nav a {
-            float: left;
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 20px; /* Espaçamento entre itens */
-            text-decoration: none;
-        }
-
-        nav a:hover {
-            background-color: #ddd; /* Cor de fundo ao passar o mouse */
-            color: black;
-        }
-
-        @media screen and (max-width: 600px) {
-            nav a {
-                float: none;
-                display: block;
-                text-align: left;
-            }
-        }  
-</style>
 </head>
 <body>
+    <!-- Barra de navegação -->
+    <nav>
+      <a href="index.html">Despesa</a>
+      <a href="categorias.html">Categoria</a>
+      <a href="login.html" onclick="logoff()">Logoff</a>
+    </nav>
+
 
 <div class="container">
-  <!-- Barra de navegação -->
-  <nav>
-    <a href="index.html">Despesa</a>
-    <a href="categorias.html">Categoria</a>
-    <a href="login.html" onclick="logoff()">Logoff</a>
-  </nav>
+  <main>
+
+  </main>
 
   <div>
 

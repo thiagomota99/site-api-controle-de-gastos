@@ -5,115 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Categorias</title>
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-        }
-	
-        /* Estilizando o campo de entrada */
-        input[type="text"] {
-            width: 200px; /* largura desejada */
-            padding: 8px; /* espaçamento interno */
-            border: 1px solid #ccc; /* borda com cor cinza */
-            border-radius: 5px; /* borda arredondada */
-            margin-bottom: 10px; /* margem inferior */
-            font-size: 16px; /* tamanho da fonte */
-            box-sizing: border-box; /* incluir o padding e a borda na largura total */
-        }
-
-        /* Estilizando o botão */
-        button {
-            background-color: #4CAF50; /* cor de fundo verde */
-            color: white; /* cor do texto branco */
-            padding: 10px 20px; /* espaçamento interno */
-            border: none; /* remover a borda */
-            border-radius: 5px; /* borda arredondada */
-            cursor: pointer; /* cursor de ponteiro ao passar o mouse */
-            font-size: 16px; /* tamanho da fonte */
-        }
-
-        /* Estilizando o botão ao passar o mouse */
-        button:hover {
-            background-color: #45a049; /* cor de fundo verde mais escura */
-        }
-		
-        .container {
-            max-width: 800px;
-            margin: 20px auto;
-            padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        h1 {
-            text-align: center;
-        }
-        button {
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: #fff;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-        button:hover {
-            background-color: #0056b3;
-        }
-        #response {
-            margin-top: 20px;
-        }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            padding: 10px;
-            border-bottom: 1px solid #ddd;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-		
-        /* Estilos da barra de navegação */
-        nav {
-            background-color: #333; /* Cor de fundo */
-            overflow: hidden;
-        }
-
-        nav a {
-            float: left;
-            display: block;
-            color: white;
-            text-align: center;
-            padding: 14px 20px; /* Espaçamento entre itens */
-            text-decoration: none;
-        }
-
-        nav a:hover {
-            background-color: #ddd; /* Cor de fundo ao passar o mouse */
-            color: black;
-        }
-
-        @media screen and (max-width: 600px) {
-            nav a {
-                float: none;
-                display: block;
-                text-align: left;
-            }
-        } 		
-    </style>
+    <link rel="stylesheet" href="estilo/style.css">
 </head>
 <body>
+    <nav>
+        <a href="index.html">Despesa</a>
+        <a href="categorias.html">Categoria</a>
+        <a href="login.html" onclick="logoff()">Logoff</a>
+    </nav>
     <div class="container">
-		<nav>
-			<a href="index.html">Despesa</a>
-			<a href="categorias.html">Categoria</a>
-            <a href="login.html" onclick="logoff()">Logoff</a>
-		</nav>
-		<hr>
-		
 		<input type="text" id="descricao" placeholder="Descrição" required>
 		<button id="btnCadastrarCategoria">Cadastrar</button>
 		<hr>
