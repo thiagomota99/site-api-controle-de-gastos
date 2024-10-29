@@ -109,6 +109,7 @@ label {
 }
 
 input[type="datetime-local"],
+input[type="date"],
 input[type="text"],
 textarea,
 select {

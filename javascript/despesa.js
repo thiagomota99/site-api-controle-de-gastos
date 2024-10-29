@@ -206,8 +206,8 @@ function enviarObjetoJSON(typeRequest,objetoJSON, urlDestino, sucessoCallback, e
 
 // Função para carregar despesas via AJAX
 function carregarDespesas() {
-	var dataInicio = dataInicioDespesa.value;
-	var dataFim = dataFimDespesa.value;
+	var dataInicio = dataInicioDespesa.value + ' 00:00';
+	var dataFim = dataFimDespesa.value + ' 23:59';
   
   var dataInicioFormatada = formatarDataEnvio(dataInicio);
   var dataFimFormatada = formatarDataEnvio(dataFim);
