@@ -34,6 +34,18 @@ nav a:hover {
     overflow-y: auto; /* Adiciona scroll vertical quando a altura máxima é atingida */
 }
 
+#btnCadastrarCategoria {
+    border-radius: 5px;
+    background-color: #0b7410;
+    box-shadow: none;
+    transition-duration: 0.5s;
+}
+
+#btnCadastrarCategoria:hover {
+    color: white;
+    background-color: #45a049;
+}
+
 #btnConsultar {
     background-color: #4CAF50;
     border: none;

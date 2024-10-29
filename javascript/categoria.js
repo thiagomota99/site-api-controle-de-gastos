@@ -14,6 +14,8 @@ $(document).ready(function() {
 		console.error("Ocorreu um erro na requisição:", erro);
 	});
   });
+
+  $("#btn-enviarEdita").click(editarCategoria)
 });
 
 function enviarObjetoJSON(objetoJSON, urlDestino, sucessoCallback, erroCallback) {
@@ -81,6 +83,7 @@ function displayData(data) {
                                             '<tr>' +
                                                 '<th>ID</th>' +
                                                 '<th>Descrição</th>' +
+                                                '<th>Ações</th>' +
                                             '</tr>' +
                                         '</thead>' +
                                         '<tbody>';
@@ -88,6 +91,7 @@ function displayData(data) {
                     categoriesTable += '<tr>' +
                                             '<td>' + category.id + '</td>' +
                                             '<td>' + category.descricao + '</td>' +
+                                            '<td> <i class="fas fa-pencil-alt acao-icon" onclick="carregarModalCategoria('+category.id+')"></i></td>' +
                                         '</tr>';
                 });
                 categoriesTable += '</tbody>' +
@@ -104,3 +108,54 @@ function isAuthenticate() {
   if(localStorage.getItem("token") == null) 
     logoff();    
 }
+
+function carregarModalCategoria(id) {
+    $.ajax({
+        type: "GET",
+        url: urlDestino + '/' + id,
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },        
+        success: function (categoria) {
+            document.getElementById("idEditaDespesa").value = categoria.id;
+            document.getElementById("descricaoEdita").value = categoria.descricao;
+
+            $('#myModalEditaCategoria').modal('show');
+        },
+        error: function (xhr, status, error) {
+            if (erroCallback && typeof erroCallback === "function") {
+                erroCallback(xhr.responseText);
+            }
+        }
+    });
+}
+
+function editarCategoria() {
+    var id = document.getElementById("idEditaDespesa").value;
+    var descricao = document.getElementById("descricaoEdita").value;
+   
+    var objecto = {
+        "id": Number(id),
+        "descricao": descricao
+    };
+  
+    // Configuração da requisição AJAX
+    $.ajax({
+        type: "PUT",
+        url: urlDestino,
+        contentType: "application/json",
+        data: JSON.stringify(objecto),
+        headers: {
+            "Authorization": "Bearer " + localStorage.getItem("token")
+        },        
+        success: function (resposta) {
+            alert("Categoria editada com sucesso!");
+            console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
+            $('#myModalEditaCategoria').modal('hide');
+        },
+        error: function (xhr, status, error) {
+            alert(error);
+            console.error("Ocorreu um erro na requisição:", error);
+        }
+    });
+  }

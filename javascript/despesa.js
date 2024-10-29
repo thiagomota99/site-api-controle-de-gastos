@@ -251,7 +251,7 @@ function montarTabela(dados) {
     var dataFormatada = new Date(despesa.dataCadastro);
     var dataString = ('0' + dataFormatada.getDate()).slice(-2) + '/' + ('0' + (dataFormatada.getMonth() + 1)).slice(-2) + '/' + dataFormatada.getFullYear();
     cellData.innerHTML = dataString;
-    cellValor.innerHTML = despesa.valor.toFixed(2);
+    cellValor.innerHTML = despesa.valor.toFixed(2).replace(".",",");
     cellDescricao.innerHTML = despesa.descricao;
     cellCategoria.innerHTML = despesa.categoria;
     cellFormaPagamento.innerHTML = despesa.formaDePagamento;
