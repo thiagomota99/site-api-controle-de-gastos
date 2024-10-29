@@ -91,7 +91,8 @@ function displayData(data) {
                     categoriesTable += '<tr>' +
                                             '<td>' + category.id + '</td>' +
                                             '<td>' + category.descricao + '</td>' +
-                                            '<td> <i class="fas fa-pencil-alt acao-icon" onclick="carregarModalCategoria('+category.id+')"></i></td>' +
+                                            '<td> <i class="fas fa-pencil-alt acao-icon" onclick="carregarModalCategoria('+category.id+')"></i>' +
+                                            '<i class="fas fa-times acao-icon" onclick="deletarCategoria('+category.id+')"></i></td>' +
                                         '</tr>';
                 });
                 categoriesTable += '</tbody>' +
@@ -158,4 +159,21 @@ function editarCategoria() {
             console.error("Ocorreu um erro na requisição:", error);
         }
     });
+  }
+
+  function deletarCategoria(id) {
+        $.ajax({
+            type: "DELETE",
+            url: urlDestino + '/' + id,            
+            headers: {
+                "Authorization": "Bearer " + localStorage.getItem("token")
+            },        
+            success: function (resposta) {
+                alert(resposta);
+            },
+            error: function (xhr, status, error) {
+                alert(error);
+                console.error("Ocorreu um erro na requisição:", error);
+            }
+        });
   }
