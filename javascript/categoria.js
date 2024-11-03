@@ -162,18 +162,24 @@ function editarCategoria() {
   }
 
   function deletarCategoria(id) {
-        $.ajax({
-            type: "DELETE",
-            url: urlDestino + '/' + id,            
-            headers: {
-                "Authorization": "Bearer " + localStorage.getItem("token")
-            },        
-            success: function (resposta) {
-                alert(resposta);
-            },
-            error: function (xhr, status, error) {
-                alert(error);
-                console.error("Ocorreu um erro na requisição:", error);
-            }
-        });
+        document.getElementById("modal-body-deletar-categoria").innerHTML = 'Deseja mesmo excluir a categoria Id: ' + id;
+        $('#modalDeletarCategoria').modal('show');
+
+        $("#btnModalDeletarCategoria").click(function () {
+            $.ajax({
+                type: "DELETE",
+                url: urlDestino + '/' + id,            
+                headers: {
+                    "Authorization": "Bearer " + localStorage.getItem("token")
+                },        
+                success: function (resposta) {
+                    $('#modalDeletarCategoria').modal('hide');
+                },
+                error: function (xhr, status, error) {
+                    alert(error);
+                    console.error("Ocorreu um erro na requisição:", error);
+                    $('#modalDeletarCategoria').modal('hide');
+                }
+            });    
+        });  
   }

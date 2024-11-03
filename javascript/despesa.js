@@ -87,14 +87,14 @@ function aplicarFormatacaoMoeda() {
 
 function getCamposFormulario() {
 	var dataCadastro = document.getElementById("data_cadastro").value;
-	dataCadastro = formatarDataEnvio(dataCadastro);
+	dataCadastro = formatarDataEnvio(dataCadastro) + ' 00:00';
 
   var dataVencimento = null;
   if(document.getElementById("data_vencimento").value != "" && 
   document.getElementById("data_vencimento").value != null && 
   document.getElementById("data_vencimento").value != undefined) {
     dataVencimento = document.getElementById("data_vencimento").value;
-    dataVencimento = formatarDataEnvio(dataVencimento);
+    dataVencimento = formatarDataEnvio(dataVencimento) + ' 23:59';
   }
 
   

@@ -46,11 +46,27 @@ nav a:hover {
     overflow-y: auto; /* Adiciona scroll vertical quando a altura máxima é atingida */
 }
 
+#btnBuscarCategorias {
+    border-radius: 5px;
+    background-color: #007bff;
+    border-color: #007bff;
+    text-decoration: none;
+    box-shadow: none;
+    padding: 10px;
+    color: white;
+    transition-duration: 0.5s;
+}
+
+#btnBuscarCategorias:hover {
+    background-color: #2b64a0;
+}
+
 #btnCadastrarCategoria {
     border-radius: 5px;
     background-color: #0b7410;
     text-decoration: none;
     box-shadow: none;
+    padding: 10px;
     border: none;
     transition-duration: 0.5s;
 }
