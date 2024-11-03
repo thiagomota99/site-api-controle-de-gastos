@@ -258,7 +258,7 @@ function montarTabela(dados) {
     
     // Ícone de edição (lápis)
     var editIcon = document.createElement("i");
-    editIcon.className = "fas fa-pencil-alt acao-icon"; // Adicione a classe do ícone de edição
+    editIcon.className = "fas fa-pencil-alt acao-icon acao-editar"; // Adicione a classe do ícone de edição
     editIcon.onclick = function() {
       carregarModalDespesa(despesa);
       $('#myModalEditaDespesa').modal('show');

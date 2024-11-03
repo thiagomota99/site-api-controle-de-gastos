@@ -91,7 +91,7 @@ function displayData(data) {
                     categoriesTable += '<tr>' +
                                             '<td>' + category.id + '</td>' +
                                             '<td>' + category.descricao + '</td>' +
-                                            '<td> <i class="fas fa-pencil-alt acao-icon" onclick="carregarModalCategoria('+category.id+')"></i>' +
+                                            '<td> <i class="fas fa-pencil-alt acao-icon acao-editar" onclick="carregarModalCategoria('+category.id+')"></i>' +
                                             '<i class="fas fa-times acao-icon" onclick="deletarCategoria('+category.id+')"></i></td>' +
                                         '</tr>';
                 });

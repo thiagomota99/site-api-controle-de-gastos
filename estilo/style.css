@@ -28,6 +28,18 @@ nav a:hover {
     color: black;
     text-decoration: none;
 }
+
+.acao-icon {
+    transition-duration: 0.5s;
+}
+
+.acao-icon:hover {
+    color: red;
+}
+
+.acao-editar:hover {
+    color: blue;
+}
   
 .fixed-height-table tbody {
     max-height: 500px; /* Defina a altura máxima desejada */
@@ -37,7 +49,9 @@ nav a:hover {
 #btnCadastrarCategoria {
     border-radius: 5px;
     background-color: #0b7410;
+    text-decoration: none;
     box-shadow: none;
+    border: none;
     transition-duration: 0.5s;
 }
 
