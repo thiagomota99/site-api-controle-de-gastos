@@ -269,7 +269,7 @@ function montarTabela(dados) {
     var deleteIcon = document.createElement("i");
     deleteIcon.className = "fas fa-times acao-icon"; // Adicione a classe do ícone de exclusão
     deleteIcon.onclick = function() {
-        deletarDespesa(despesa.id); // Chamada da função deletarDespesa com o id da despesa como argumento
+        deletarDespesa(despesa.id, despesa.descricao); // Chamada da função deletarDespesa com o id da despesa como argumento
     };
     cellAcoes.appendChild(deleteIcon);
     
@@ -285,22 +285,29 @@ function montarTabela(dados) {
     totalCellValue.innerHTML = totalDespesas.toFixed(2);
 }
 
-function deletarDespesa(id) {
-  $.ajax({
-        type: "DELETE",
-        url: urlDestino + "despesas/" + id,
-        headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token")
-        },
-        success: function (resposta) {
-          console.log("Requisição bem-sucedida. Resposta do servidor:", resposta);
-          reloadTabela();
-        },
-        error: function (xhr, status, error) {
-          console.error("Ocorreu um erro na requisição:", erro);
-          alert(error);          
-        }
+function deletarDespesa(id, descricao) {
+  document.getElementById("modal-body-deletar-despesa").innerHTML = 'Deseja mesmo excluir a despesa Id: ' + id + '; Descrição: ' + descricao;
+  $('#modalDeletarDespesa').modal('show');
+
+  $("#btnModalDeletarDespesa").click(function () {
+    $.ajax({
+      type: "DELETE",
+      url: urlDestino + "despesas/" + id,
+      headers: {
+          "Authorization": "Bearer " + localStorage.getItem("token")
+      },
+      success: function (resposta) {
+        $('#modalDeletarDespesa').modal('hide');
+        reloadTabela();
+      },
+      error: function (xhr, status, error) {
+        console.error("Ocorreu um erro na requisição:", erro);
+        alert(error);
+        $('#modalDeletarDespesa').modal('hide');         
+      }
     });
+  });
+  
 }
 
 function carregarModalDespesa(despesa) {
